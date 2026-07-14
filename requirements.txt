@@ -1,0 +1,4 @@
+google-genai>=1.0
+pypdf>=4.0
+numpy>=1.26
+streamlit>=1.35

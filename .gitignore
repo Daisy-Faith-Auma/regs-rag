@@ -1,0 +1,6 @@
+__pycache__/
+venv/
+.cache/
+*.npz
+.env
+regulations.pdf
