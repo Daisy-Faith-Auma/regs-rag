@@ -1,5 +1,7 @@
 # Race Regulations RAG Assistant 🏁
 
+Built by [Daisy Auma](https://github.com/Daisy-Faith-Auma) · [LinkedIn](https://linkedin.com/in/daisyfaithauma)
+
 Ask questions about the FIA Formula E Sporting Regulations and get grounded
 answers with page-level citations — powered by a Retrieval-Augmented
 Generation (RAG) pipeline built in Python with the Gemini API.
@@ -38,13 +40,16 @@ The migration path to production on Google Cloud:
 | API key auth | **IAM service account, least-privilege roles** |
 | ad-hoc runs | Cloud Functions / Cloud Run endpoint |
 
-### Cost guardrails (built in)
+### Cost and reliability guardrails (built in)
 
-- Embeddings are **cached** (`.cache/embeddings.npz`) — re-running ingest
-  never re-embeds unchanged chunks.
-- Embedding calls are **batched** (100 chunks per request).
+- Embeddings are **cached** (`.cache/embeddings.npz`) and saved after every
+  batch — re-running ingest never re-embeds unchanged chunks, and a crash
+  or quota hit never loses progress.
+- Embedding calls are **batched** (20 per request) with automatic backoff
+  and retry on rate limits — runs cleanly on the free tier.
 - Retrieval sends only top-k chunks to the generation model, keeping
-  context (and cost) bounded.
+  context (and cost) bounded, and the UI **warns the user when retrieval
+  confidence is low** rather than letting the model answer off weak context.
 
 ## Setup
 
@@ -65,12 +70,11 @@ python app.py "What happens if a driver exceeds the power limit?"
 streamlit run app.py
 ```
 
-## Example
+## Sample output
 
 > **Q:** How does Attack Mode work?
 
 ![Sample output](sample-output.png)
->
-> **A:** Drivers must arm Attack Mode by driving through the designated
-> activation zone off the racing line, granting a temporary power increase…
-> *(Sources: page 42, page 43)*
+
+Answers cite the exact regulation pages (e.g. [page 75], [page 37]),
+verified against the source PDF.
